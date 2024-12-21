@@ -51,8 +51,9 @@ func calculate_fence_cost(mapOfGarden []string, location Coordinate, locationsVi
 
 	number_of_sides := calculate_number_of_sides(leftBoundary, upBoundary, rightBoundary, downBoundary)
 
-	region := rune(mapOfGarden[location.Row][location.Column])
-	fmt.Printf("calculate_fence_cost: region %s, area %d * number of side %d = %d\n", string(region), area, number_of_sides, area*number_of_sides)
+	// region := rune(mapOfGarden[location.Row][location.Column])
+	// debugging difference with example
+	// fmt.Printf("calculate_fence_cost: region %s, area %d * number of side %d = %d\n", string(region), area, number_of_sides, area*number_of_sides)
 
 	return area * number_of_sides
 }
@@ -62,7 +63,8 @@ func calculate_number_of_sides(leftBoundary map[Coordinate]void, upBoundary map[
 	right_sides := calculate_number_of_vertical_sides(rightBoundary)
 	up_sides := calculate_number_of_horizontal_sides(upBoundary)
 	down_sides := calculate_number_of_horizontal_sides(downBoundary)
-	fmt.Printf("%d left sides, %d right sides, %d up sides, %d down side\n", left_sides, right_sides, up_sides, down_sides)
+	// debugging sides logic
+	// fmt.Printf("%d left sides, %d right sides, %d up sides, %d down side\n", left_sides, right_sides, up_sides, down_sides)
 	return left_sides + right_sides + up_sides + down_sides
 }
 
@@ -72,20 +74,24 @@ func calculate_number_of_horizontal_sides(horizontalBoundary map[Coordinate]void
 		row_edges[location.Row] = append(row_edges[location.Row], location.Column)
 	}
 	totalSides := 0
-
 	for _, segments := range row_edges {
-		slices.Sort(segments)
-		sides := 1
-		previous := segments[0]
-		for i := 1; i < len(segments); i++ {
-			if segments[i]-previous != 1 {
-				sides++ // not the same side
-			}
-			previous = segments[i]
-		}
+		sides := calculate_number_of_contiguous_segments(segments)
 		totalSides += sides
 	}
 	return totalSides
+}
+
+func calculate_number_of_contiguous_segments(segments []int) int {
+	slices.Sort(segments)
+	contiguous_segment_count := 1
+	previous := segments[0]
+	for i := 1; i < len(segments); i++ {
+		if segments[i]-previous != 1 {
+			contiguous_segment_count++ // not continguous
+		}
+		previous = segments[i]
+	}
+	return contiguous_segment_count
 }
 
 func calculate_number_of_vertical_sides(verticalBoundary map[Coordinate]void) int {
@@ -94,17 +100,8 @@ func calculate_number_of_vertical_sides(verticalBoundary map[Coordinate]void) in
 		column_edges[location.Column] = append(column_edges[location.Column], location.Row)
 	}
 	totalSides := 0
-
 	for _, segments := range column_edges {
-		slices.Sort(segments)
-		sides := 1
-		previous := segments[0]
-		for i := 1; i < len(segments); i++ {
-			if segments[i]-previous != 1 {
-				sides++ // not the same side
-			}
-			previous = segments[i]
-		}
+		sides := calculate_number_of_contiguous_segments(segments)
 		totalSides += sides
 	}
 	return totalSides
