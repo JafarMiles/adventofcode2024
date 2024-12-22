@@ -6,5 +6,5 @@ import (
 
 func main() {
 	fmt.Println("Hello, World!")
-	advent_of_code_day_13()
+	advent_of_code_day_14()
 }
